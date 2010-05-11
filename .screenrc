@@ -1,0 +1,9 @@
+startup_message off
+defscrollback 2048
+hardstatus on
+hardstatus alwayslastline
+hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "
+autodetach on
+shell -$SHELL
+
+vbell on
