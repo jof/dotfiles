@@ -1,0 +1,11 @@
+"2.3.1 (created: 2010/04/07 18:25:13)
+
+map H :back<Return>
+map L :forward<Return>
+map J 10j
+map K 10k
+set guioptions=rbmT
+set runtimepath=/Users/jof/.vimperator
+source! /Users/jof/.vimperatorrc.local
+
+" vim: set ft=vimperator:
