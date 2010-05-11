@@ -1,0 +1,103 @@
+# bools
+#  set foo
+#  unset foo
+#  toggle foo
+#  reset foo (reset to compile-time default)
+#  set nofoo or set invfoo (inverts value)
+
+set allow_8bit		# use QP or base64 if unset
+unset arrow_cursor	# I use a real terminal, thank you very much
+set ascii_chars		# looks beter with this on in the osx term emulator for some reason
+set attach_split	# handle each attachment instead of concatenating
+set move=no
+set realname="Jonathan Lassoff"
+set from="jof@thejof.com"
+set use_from=yes
+set alias_file=~/.mutt/aliases
+source $alias_file
+
+set sort=threads
+#set sort_browser=reverse-date
+set sort_aux=last-date-received
+
+set attribution = 'Encapsulated within %i on %d, %n <%a> wrote:' # default: 'On %d, %n wrote:' # default: 'On %d, %n wrote:'
+set autoedit = yes # default: no
+set beep = no # default: yes
+set crypt_autopgp = yes
+set crypt_autosmime = yes
+set pgp_autoinline = no
+set crypt_replysignencrypted = yes
+set pgp_autosign = yes
+set pgp_sign_as = "0x8f8cad3d"
+set edit_headers = yes
+set fast_reply = yes
+set forward_edit = ask-yes # default: yes
+set forward_format = '%s' # default: '[%a: %s]'
+set header = yes
+set recall = ask-yes
+set reply_to = yes
+set pager_index_lines=5
+set reverse_name
+#alternates "foo@bar.com|baz@quux.com"
+
+set editor="vim '+:8'"
+
+set mbox_type=Maildir
+
+set spoolfile="~/Maildir/"
+set folder="~/Maildir/"
+set mask="!^\\\\.[^.]"
+set record="+.Sent"
+set postponed="+.Drafts"
+
+mailboxes `echo -n "+ "; find ~/Maildir -type d -name ".*" -printf "+'%f' "`
+
+macro pager \cu |urlview\n
+
+macro index c "<change-folder>?<toggle-mailboxes>" "open a different folder"
+macro pager c "<change-folder>?<toggle-mailboxes>" "open a different folder"
+
+macro index C "<copy-message>?<toggle-mailboxes>" "copy a message to a mailbox"
+macro index M "<save-message>?<toggle-mailboxes>" "move a message to a mailbox"
+macro pager M "<save-message>?<toggle-mailboxes>" "move a message to a mailbox"
+
+macro index q '<change-folder>?<toggle-mailboxes>'
+macro browser q '<exit><quit>'
+
+#spamassassin report and classify as spam
+#macro index S "|/usr/bin/spamassassin -r"
+#macro pager S "|/usr/bin/spamassassin -r"
+##spamasssassin classify as ham
+#macro index H "|/usr/bin/sa-learn --ham --no-rebuild --single"
+#macro pager H "|/usr/bin/sa-learn --ham --no-rebuild --single"
+
+#rebuild the spamassassin bayes filter db
+#macro index R "!/usr/bin/sa-learn --sync"
+
+#macro index E "<recall-message>"
+
+macro browser S "!/usr/bin/mbsync work\ny"
+bind pager <up> previous-page
+bind pager <down> next-page
+bind pager <Backspace> previous-line
+bind pager <Return> next-line
+bind index ' ' next-unread
+bind pager ' ' next-unread
+bind index A create-alias
+bind pager A create-alias
+bind pager [ previous-page
+bind pager ] next-page
+bind pager } bottom
+bind pager,index I flag-message
+macro pager,index F ":set mime_forward=yes\n<forward-message>"
+color normal default default
+set confirmappend=no
+
+set header_cache = /home/jof/.mutt/headers/
+
+# use very high read_inc to speed up reading hcache'd maildirs
+folder-hook . 'set read_inc=1000'
+
+#Up too late? In denial over the whole thing?
+#    don't display the time in the index
+# set index_format='%4C %Z %{%b} %-15.15L (%4l) %s'
