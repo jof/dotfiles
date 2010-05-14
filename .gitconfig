@@ -1,0 +1,9 @@
+[user]
+  name = Jonathan Lassoff
+  email = jof@thejof.com
+[format]
+  pretty = oneline
+[core]
+  editor = vim
+[color]
+  ui = auto
