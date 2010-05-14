@@ -46,7 +46,7 @@ tincdown(){
 
 findgrep() {
   if [ -n "$1" ] && [ -n "$2" ]; then
-    find $1 -exec grep -Hi "$2" {} \;
+    find $1 '!' -iwholename '*/.svn/*' -exec grep -Hi "$2" {} \;
   else
     echo "Usage: findgrep {path} {pattern}"
   fi
