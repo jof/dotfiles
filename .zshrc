@@ -44,6 +44,15 @@ tincdown(){
 	s /etc/init.d/tinc stop
 }
 
+findgrep() {
+  if [ -n "$1" ] && [ -n "$2" ]; then
+    find $1 -exec grep -Hi "$2" {} \;
+  else
+    echo "Usage: findgrep {path} {pattern}"
+  fi
+}
+
+
 PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}:
 export EDITOR=/usr/bin/vim
 
