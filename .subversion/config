@@ -1,0 +1,5 @@
+[tunnels]
+ssh = ssh -o ControlMaster=no
+
+[config]
+editor-cmd = vi
