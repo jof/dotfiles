@@ -19,6 +19,9 @@ bindkey -e
 
 export LANG=en_US.UTF8
 
+# Fix misbehaving java in XCB
+export AWT_TOOLKIT=MToolkit
+
 alias dayfolder="mkdir $(date +%Y-%m-%d)"
 alias s="sudo $*"
 alias g="git $*"
@@ -49,6 +52,14 @@ findgrep() {
     find $1 '!' -iwholename '*/.svn/*' -exec grep -Hi "$2" {} \;
   else
     echo "Usage: findgrep {path} {pattern}"
+  fi
+}
+
+digtrace() {
+  if [ -n "$1" ] && [ -n "$2" ]; then
+    dig +trace @a.root-servers.net "$1" IN "$2"
+  elif [ -n "$1" ]; then
+    dig +trace @a.root-servers.net "$1" IN A
   fi
 }
 
