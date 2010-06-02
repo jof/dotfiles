@@ -31,6 +31,7 @@ alias pstree='ps axjf'
 alias psthreads='ps axms'
 alias ll='ls -la'
 alias vi='vim'
+alias grep="grep --color=auto"
 
 cd() {
  builtin cd "$@" && ll -ltrh
