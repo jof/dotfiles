@@ -10,6 +10,8 @@ if has("autocmd")
 
 endif
 
+set number
+
 set cindent
 set autoindent
 set smartindent
