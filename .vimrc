@@ -10,15 +10,31 @@ if has("autocmd")
 
 endif
 
-set number
-
 set cindent
 set autoindent
+set copyindent
+set number
 set smartindent
 set expandtab
 set tabstop=2
 set shiftwidth=2
+set hidden
+set showmatch
+
+set ignorecase    " ignore case when searching
+set smartcase     " ignore case if search pattern is all lowercase,
+                  "    case-sensitive otherwise
+set hlsearch
+set incsearch
+set title
 
 set cursorline
 
+" change the mapleader from \ to ,
+let mapleader=","
+
 colorscheme desert
+
+" vim-pathogen: load everything under ~/.vim/bundle
+call pathogen#helptags()
+call pathogen#runtime_append_all_bundles()

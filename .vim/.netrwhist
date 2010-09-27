@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/jof/src/imager_control/imaging'
+let g:netrw_dirhist_2='/home/jof/src/imager_control/templates/imaging'
+let g:netrw_dirhist_3='/home/jof/.zsh'
