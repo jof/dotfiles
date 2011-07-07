@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
-let g:netrw_dirhist_1='/home/jof/src/imager_control/imaging'
-let g:netrw_dirhist_2='/home/jof/src/imager_control/templates/imaging'
-let g:netrw_dirhist_3='/home/jof/.zsh'
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/jof/src/backup/lib/backup'
+let g:netrw_dirhist_2='/Users/jof/src/backup/lib/backup/storage'
+let g:netrw_dirhist_3='/Users/jof/src/backup/bin'
+let g:netrw_dirhist_4='/Users/jof/src/backup/lib/backup'

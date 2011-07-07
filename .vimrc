@@ -39,3 +39,4 @@ colorscheme desert
 " vim-pathogen: load everything under ~/.vim/bundle
 call pathogen#helptags()
 call pathogen#runtime_append_all_bundles()
+
