@@ -1,9 +1,25 @@
 [user]
-  name = Jonathan Lassoff
-  email = jof@thejof.com
+	name = Jonathan Lassoff
+	email = jof@thejof.com
+[diff]
+  renames = true
+[push]
+  default = tracking
 [format]
   pretty = oneline
 [core]
   editor = vim
 [color]
   ui = auto
+[alias]
+  st = status
+  ci = commit
+  co = checkout
+  b = branch
+  changed = diff --name-status -r
+  add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  lg = log --graph --abbrev-commit --date=relative --pretty=format:'%h -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset'
+  su = submodule update --init
+
+[branch]
+  autosetupmerge = true
