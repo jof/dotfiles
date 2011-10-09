@@ -1,0 +1,138 @@
+#!/usr/bin/ruby
+
+require 'getoptlong'
+
+## Helpers
+def superuser?
+  Process.euid == 0
+end
+
+def superuser_exec(command)
+  if superuser? then
+    fork{ exec(command) }
+    Process.wait
+  else
+    fork{ exec("sudo #{command}") }
+    Process.wait
+  end
+end
+def superuser_capture(command)
+  if superuser? then
+    capture = `#{command}`
+  else
+    capture = `sudo #{command}`
+  end
+  return capture
+end
+
+def check_if_mounted(mount_point)
+  proc_mounts = open('/proc/mounts', 'r')
+  mounts = proc_mounts.readlines.map { |line| line.strip.split }
+  proc_mounts.close
+
+  mounts.select { |mount| mount[1] == mount_point }.length > 0
+end
+
+def find_loopback(file)
+  losetup_raw = superuser_capture("losetup -a")
+
+  regex = /^(\/dev\/loop\d+):.*\((.*)\)$/
+  loopbacks = losetup_raw.split("\n").select { |line| line.match(regex) }
+  loopbacks = loopbacks.map { |line| matches = line.match(regex).to_a; matches.shift; matches }
+
+  if loopbacks.length > 0 then
+    loopbacks.first[0]
+  else
+    nil
+  end
+end
+
+def setup_loopback(file)
+  # See if losetup reports the file already, return that device
+  if (device = find_loopback(file)) then
+    return device
+  else
+  # If not, setup with "find" option, then search and return the new device
+    superuser_exec("losetup -f #{file}")
+
+    return find_loopback(file)
+  end
+end
+
+def check_device_mapper(name)
+  dmsetup_raw = superuser_capture("dmsetup ls")
+  dm_devices = dmsetup_raw.split("\n").map{ |line| line.strip.split[0] }
+
+  device = dm_devices.select { |device_name| device_name == name }.first || nil
+
+  if device then
+    return "/dev/mapper/#{device}"
+  else
+    return nil
+  end
+end
+
+def setup_luks(name, device)
+  superuser_exec("cryptsetup luksOpen #{device} #{name}")
+
+  return check_device_mapper(name)
+end
+## end of helpers. Real stuff below VVVV
+
+
+
+
+# Tuples of: name, sparse file to loopback against, and a mount point
+mounts = [
+           ['mail', '/home/jof/mailblocks', '/home/jof/Mail'],
+         ]
+
+dismount = nil
+opts = GetoptLong.new( [ '--dismount', '-d', GetoptLong::NO_ARGUMENT] )
+opts.each do |opt,val|
+  case opt
+  when '--dismount'
+    dismount = true
+  end
+end
+
+name = ARGV.first
+
+unless name then
+  puts "This program needs a single argument (the name of the mount to mount)"
+  Kernel.exit(1)
+end
+
+mount_descriptor = mounts.select { |md| md[0] == ARGV[0] }.first
+
+unless mount_descriptor then
+  puts "No mount with that name was found"
+end
+
+# If dismounting, do so
+if dismount then
+  superuser_exec("umount #{mount_descriptor[2]}")
+  superuser_exec("cryptsetup luksClose #{mount_descriptor[0]}")
+  loopback_device = find_loopback(mount_descriptor[1])
+  if loopback_device then
+    superuser_exec("losetup -d #{loopback_device}")
+  end
+  Kernel.exit(0)
+end
+
+
+# See if the filesystem is already mounted. If so, return 0
+if check_if_mounted(mount_descriptor[2]) then
+  puts "Already mounted"
+  Kernel.exit(0)
+else
+# Not mounted, mount it.
+  if check_device_mapper(mount_descriptor[0]) then
+    puts "There is already a device mapper device called #{mount_descriptor[0]}"
+    Kernel.exit(1)
+  end
+
+  loopback_device = setup_loopback(mount_descriptor[1])
+  dm_device       = setup_luks(mount_descriptor[0], loopback_device)
+  superuser_exec("mount #{dm_device} #{mount_descriptor[2]}")
+end

@@ -64,6 +64,11 @@ digtrace() {
   fi
 }
 
+original_offlineimap=`which offlineimap`
+offlineimap() {
+  mount_crypt mail && $original_offlineimap
+}
+
 
 PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}:
 export EDITOR=/usr/bin/vim
@@ -80,6 +85,9 @@ else
  eval `gpg-agent --daemon`
  echo $GPG_AGENT_INFO >$HOME/.gpg-agent-info
 fi
+
+# Configure Awesome
+export XDG_CONFIG_HOME=~/.config
 
 # Auto-screen invocation.
 # if we're coming from a remote SSH connection, in an interactive session
