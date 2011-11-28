@@ -1,0 +1,6 @@
+[submodule "homedir_root/.vim/bundle/vim-colors-solarized"]
+	path = homedir_root/.vim/bundle/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized.git
+[submodule "homedir_root/.vim/bundle/vim-fugitive"]
+	path = homedir_root/.vim/bundle/vim-fugitive
+	url = git://github.com/tpope/vim-fugitive.git
