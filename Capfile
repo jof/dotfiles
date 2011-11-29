@@ -18,6 +18,11 @@ set :application, "jof's dotfiles"
 set :user, ENV['USER']
 set :deploy_to, "/home/#{fetch(:user)}"
 
+desc "Deploy to the local host"
+task :localhost do
+  role :server, "localhost"
+end
+
 desc "Load up a home directory with personal options and tools."
 task :deploy, :roles => :server do
   # Enumerate local files to place
