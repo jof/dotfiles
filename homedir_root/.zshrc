@@ -50,7 +50,7 @@ tincdown(){
 
 findgrep() {
   if [ -n "$1" ] && [ -n "$2" ]; then
-    find $1 '!' -iwholename '*/.svn/*' -exec grep -Hi "$2" {} \;
+    find $1 '!' -iwholename '*/.svn/*' '!' -iwholename '*/.git/*'  -exec grep -Hi "$2" {} \;
   else
     echo "Usage: findgrep {path} {pattern}"
   fi
@@ -77,13 +77,15 @@ autoload -U promptinit
 promptinit
 prompt adam1 black
 
-#initialize GPG agent
-if test -f $HOME/.gpg-agent-info &&    kill -0 `cut -d: -f 2 $HOME/.gpg-agent-info` 2>/dev/null; then
- GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info`
- export GPG_AGENT_INFO
-else
- eval `gpg-agent --daemon`
- echo $GPG_AGENT_INFO >$HOME/.gpg-agent-info
+# Initialize GPG agent, if installed.
+if [ -f `which gpg-agent` ]; then
+  if test -f $HOME/.gpg-agent-info &&    kill -0 `cut -d: -f 2 $HOME/.gpg-agent-info` 2>/dev/null; then
+    GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info`
+    export GPG_AGENT_INFO
+  else
+    eval `gpg-agent --daemon`
+    echo $GPG_AGENT_INFO >$HOME/.gpg-agent-info
+  fi
 fi
 
 # Configure Awesome
