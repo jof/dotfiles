@@ -78,7 +78,7 @@ promptinit
 prompt adam1 black
 
 # Initialize GPG agent, if installed.
-if [ -f `which gpg-agent` ]; then
+which gpg-agent 2>&1 >/dev/null && {
   if test -f $HOME/.gpg-agent-info &&    kill -0 `cut -d: -f 2 $HOME/.gpg-agent-info` 2>/dev/null; then
     GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info`
     export GPG_AGENT_INFO
@@ -86,7 +86,7 @@ if [ -f `which gpg-agent` ]; then
     eval `gpg-agent --daemon`
     echo $GPG_AGENT_INFO >$HOME/.gpg-agent-info
   fi
-fi
+}
 
 # Configure Awesome
 export XDG_CONFIG_HOME=~/.config
