@@ -4,3 +4,6 @@
 [submodule "homedir_root/.vim/bundle/vim-fugitive"]
 	path = homedir_root/.vim/bundle/vim-fugitive
 	url = git://github.com/tpope/vim-fugitive.git
+[submodule "homedir_root/.vim/bundle/vim-markdown"]
+	path = homedir_root/.vim/bundle/vim-markdown
+	url = git://github.com/tpope/vim-markdown.git
