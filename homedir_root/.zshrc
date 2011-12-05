@@ -1,5 +1,4 @@
-# The following lines were added by compinstall
-
+## Shell options
 zstyle ':completion:*' completer _complete _ignored
 zstyle ':completion:*' max-errors 2
 zstyle ':completion:*' prompt 'err: %e'
@@ -7,16 +6,20 @@ zstyle :compinstall filename '/home/jof/.zshrc'
 
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
-# Lines configured by zsh-newuser-install
+
 HISTFILE=~/.histfile
 HISTSIZE=100000
 SAVEHIST=100000
+# Don't save repeats in history.
+setopt hist_ignore_all_dups
+# Ignore saving commands preceded by a space
+setopt hist_ignore_space
+
 setopt appendhistory autocd extendedglob
 unsetopt beep nomatch
 bindkey -e
-# End of lines configured by zsh-newuser-install
 
+## Personal options
 export LANG=en_US.UTF8
 
 # Fix misbehaving java in XCB
