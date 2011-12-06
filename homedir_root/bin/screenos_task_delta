@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+
+require 'getoptlong'
+
+# This takes two giant blobs of task accounting data from a ScreenOS device.
+# Since only the running CPU time is printed, we need to programmatically
+# compare two runs to figure out which tasks are using the most CPU time.
+#
+#  This script shouldn't have to exist.
+#
+# Input format:
+#
+# ID     Task Name     State               Stack            Heap/used  Scheduled    Run Time   Lock Latency
+#   1 100ms timer     IDLE (Suspend)       70002380/02000  1022/    8  452184832   16838.720,       0.000
+#   8 resource        BLOCK (Mail)         70702360/02000  1022/    8         24       0.095,       0.000
+
+top_task_length = 1000
+opts = GetoptLong.new([ '--lines', '-n', GetoptLong::REQUIRED_ARGUMENT ])
+opts.each {|opt,arg| top_task_length = arg.to_i if opt == '--lines' }
+
+def split_line(line)
+  parts = line.split(/(IDLE|BLOCK|RSVD|NORM) /).map { |part| part.strip }
+  pid, *name = parts[0].split
+  parts[0] = [ pid, name.join(" ") ]
+  parts[2] = parts[2].split
+  parts = parts.flatten
+  id, name, state, reason, stack, heap, used, scheduled, run_time, lock_latency = parts
+  task = { :id => id.to_i, 
+           :name => name, 
+           :state => state, 
+           :reason => reason, 
+           :stack => stack, 
+           :heap => heap.delete('/').to_i, 
+           :used => used, 
+           :scheduled => scheduled.to_i, 
+           :run_time => run_time.delete(',').to_f, 
+           :lock_latency => lock_latency,
+           :raw_line => line }
+  return task
+end
+
+runs = []
+
+# Pull out two arguments and only select lines that start with a PID
+task_1_raw = ARGV.shift
+task_2_raw = ARGV.shift
+task_1_tasks = task_1_raw.split("\n").select { |line| line.match(/^\s\d+/) }.map{ |line| split_line(line) }
+task_2_tasks = task_2_raw.split("\n").select { |line| line.match(/^\s\d+/) }.map{ |line| split_line(line) }
+runs << task_1_tasks
+runs << task_2_tasks
+
+latest = runs.last
+previous = runs[-2]
+
+result = {}
+latest.each do |task|
+  previous_run = previous[previous.rindex{|rtask| rtask[:id] == task[:id]}]
+  latest_run = latest[latest.rindex{|rtask| rtask[:id] == task[:id] }]
+
+  result[task[:id]] = latest_run
+  result[task[:id]][:run_time_delta] = latest_run[:run_time] - previous_run[:run_time]
+end
+
+sorted_list = result.sort do |a,b|
+  b[1][:run_time_delta] <=> a[1][:run_time_delta]
+end
+
+puts "Top #{top_task_length} tasks (by runtime):"
+puts "ID     Task Name     State               Stack            Heap/used  Scheduled    Run Time   Lock Latency     Run Time Delta"
+Range.new(0, (sorted_list.length < top_task_length ? sorted_list.length-1 : top_task_length-1)).each do |index|
+  task = sorted_list[index][1]
+  puts "#{task[:raw_line]}      #{task[:run_time_delta]}"
+end
