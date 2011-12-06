@@ -6,7 +6,9 @@ require 'getoptlong'
 # Since only the running CPU time is printed, we need to programmatically
 # compare two runs to figure out which tasks are using the most CPU time.
 #
-#  This script shouldn't have to exist.
+# Usage: screenos_task_delta [ --lines count ] 'output of "get task"' 'output of "get task"'
+#
+# This script shouldn't have to exist.
 #
 # Input format:
 #
