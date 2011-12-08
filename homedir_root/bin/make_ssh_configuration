@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat "${HOME}/.ssh/config.top" "${HOME}/.ssh/config.body" > "${HOME}/.ssh/config"
