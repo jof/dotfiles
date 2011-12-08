@@ -1,0 +1,22 @@
+music_directory		    "~/Music"
+playlist_directory		"~/.mpd/playlists"
+db_file			"~/.mpd/database"
+log_file			"~/.mpd/log"
+pid_file			"~/.mpd/pid"
+state_file			"~/.mpd/state"
+sticker_file			"~/.mpd/sticker.sql"
+
+user				"jof"
+group				"nogroup"
+
+bind_to_address		"any"
+bind_to_address		"~/.mpd/socket"
+port				"6600"
+
+# Available setting arguments are "default", "secure" or "verbose".
+#
+log_level			"default"
+
+input {
+        plugin "curl"
+}
