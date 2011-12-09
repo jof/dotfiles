@@ -10,12 +10,21 @@ user				"jof"
 group				"nogroup"
 
 bind_to_address		"any"
-bind_to_address		"~/.mpd/socket"
+#bind_to_address		"~/.mpd/socket"
 port				"6600"
 
 # Available setting arguments are "default", "secure" or "verbose".
 #
 log_level			"default"
+
+#audio_output {
+#  type "osx"
+#  name "osx"
+#}
+#audio_output {
+#  type "alsa"
+#  name "alsa"
+#}
 
 input {
         plugin "curl"
