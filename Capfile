@@ -24,7 +24,10 @@ task :localhost do
 end
 
 desc "Load up a home directory with personal options and tools."
-task :deploy, :roles => :server do
+task :deploy do |config|
+  role(:server, hostname) if config[:hostname] 
+
+
   # Enumerate local files to place
   # Place local files into remote deploy_to path
   # Place SSH keys (work vs. personal? Submodule for work?)
@@ -50,6 +53,6 @@ task :deploy, :roles => :server do
   local_files.each do |filename|
     relative_path = filename.sub(local_file_root, '')
     remote_file_name = File.expand_path(File.join(remote_home_directory, relative_path))
-    upload(filename, remote_file_name)
+    upload(filename, remote_file_name, :via => :scp)
   end
 end
