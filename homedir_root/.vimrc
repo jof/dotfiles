@@ -30,6 +30,7 @@ set incsearch
 set title
 
 set cursorline
+set mouse=n
 
 " change the mapleader from \ to ,
 let mapleader=","
