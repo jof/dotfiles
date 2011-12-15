@@ -7,6 +7,10 @@ zstyle :compinstall filename '/home/jof/.zshrc'
 autoload -Uz compinit
 compinit
 
+for zshrc_snipplet in ~/.zsh.d/S[0-9][0-9]*[^~]; do
+  source $zshrc_snipplet
+done
+
 HISTFILE=~/.histfile
 HISTSIZE=100000
 SAVEHIST=100000
@@ -15,20 +19,16 @@ setopt hist_ignore_all_dups
 # Ignore saving commands preceded by a space
 setopt hist_ignore_space
 
-setopt appendhistory autocd extendedglob
-unsetopt beep nomatch
-bindkey -e
-
 ## Personal options
 export LANG=en_US.UTF8
-
-# Fix misbehaving java in XCB
-export AWT_TOOLKIT=MToolkit
+setopt appendhistory autocd extendedglob
+unsetopt beep nomatch
+bindkey -v
+export EDITOR=vim
 
 alias dayfolder="mkdir $(date +%Y-%m-%d)"
 alias s="sudo $*"
 alias g="git $*"
-
 alias nc='nc -v -v'
 alias pstree='ps axjf'
 alias psthreads='ps axms'
@@ -36,9 +36,7 @@ alias ll='ls -la'
 alias vi='vim'
 alias grep="grep --color=auto"
 
-cd() {
- builtin cd "$@" && ll -ltrh
-}
+cd() { builtin cd "$@" && ll -ltrh }
 
 wiki(){
 	dig +short txt $1.wp.dg.cx.
@@ -74,7 +72,6 @@ offlineimap() {
 
 
 PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}:
-export EDITOR=/usr/bin/vim
 
 autoload -U promptinit
 promptinit
@@ -93,6 +90,9 @@ which gpg-agent 2>&1 >/dev/null && {
 
 # Configure Awesome
 export XDG_CONFIG_HOME=~/.config
+
+# Fix misbehaving java in XCB
+export AWT_TOOLKIT=MToolkit
 
 # Auto-screen invocation.
 # if we're coming from a remote SSH connection, in an interactive session
