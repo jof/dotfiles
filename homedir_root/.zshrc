@@ -24,6 +24,7 @@ export LANG=en_US.UTF8
 setopt appendhistory autocd extendedglob
 unsetopt beep nomatch
 bindkey -v
+bindkey -M vicmd '?' history-incremental-search-backward
 export EDITOR=vim
 
 alias dayfolder="mkdir $(date +%Y-%m-%d)"
