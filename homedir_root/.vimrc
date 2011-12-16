@@ -34,6 +34,7 @@ set mouse=n
 
 " change the mapleader from \ to ,
 let mapleader=","
+let g:netrw_liststyle=3
 
 colorscheme desert
 
