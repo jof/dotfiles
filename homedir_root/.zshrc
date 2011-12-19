@@ -23,9 +23,17 @@ setopt hist_ignore_space
 export LANG=en_US.UTF8
 setopt appendhistory autocd extendedglob
 unsetopt beep nomatch
+export EDITOR=vim
 bindkey -v
 bindkey -M vicmd '?' history-incremental-search-backward
-export EDITOR=vim
+function vi-repeat-incremental-search-backward {
+  bindkey -e
+  zle -U $'\C-r'
+  zle history-incremental-search-backward
+  bindkey -v
+}
+zle -N vi-repeat-incremental-search-backward
+bindkey -a N vi-repeat-incremental-search-backward
 
 alias dayfolder="mkdir $(date +%Y-%m-%d)"
 alias s="sudo $*"
