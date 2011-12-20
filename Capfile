@@ -23,10 +23,15 @@ task :localhost do
   role :server, "localhost"
 end
 
+# "Set ~/.ssh permissions."
+task :set_ssh_permissions do
+  run("chown 0755 #{File.join(fetch(:deploy_to), '.ssh')}")
+end
+
+
 desc "Load up a home directory with personal options and tools."
 task :deploy do |config|
   role(:server, hostname) if config[:hostname] 
-
 
   # Enumerate local files to place
   # Place local files into remote deploy_to path
@@ -55,4 +60,6 @@ task :deploy do |config|
     remote_file_name = File.expand_path(File.join(remote_home_directory, relative_path))
     upload(filename, remote_file_name, :via => :scp)
   end
+
+  set_ssh_permissions
 end
