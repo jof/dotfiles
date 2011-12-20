@@ -7,3 +7,6 @@
 [submodule "homedir_root/.vim/bundle/vim-markdown"]
 	path = homedir_root/.vim/bundle/vim-markdown
 	url = git://github.com/tpope/vim-markdown.git
+[submodule "homedir_root/.vim/bundle/vim-simplefold"]
+	path = homedir_root/.vim/bundle/vim-simplefold
+	url = git://github.com/vim-scripts/simplefold.git
