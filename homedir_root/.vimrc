@@ -21,6 +21,7 @@ set shiftwidth=2
 set bs=2
 set hidden
 set showmatch
+set foldmethod=syntax
 
 set ignorecase    " ignore case when searching
 set smartcase     " ignore case if search pattern is all lowercase,
