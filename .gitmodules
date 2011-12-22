@@ -10,3 +10,6 @@
 [submodule "homedir_root/.vim/bundle/vim-simplefold"]
 	path = homedir_root/.vim/bundle/vim-simplefold
 	url = git://github.com/vim-scripts/simplefold.git
+[submodule "homedir_root/.vim/bundle/vim-surround"]
+	path = homedir_root/.vim/bundle/vim-surround
+	url = git://github.com/tpope/vim-surround.git
