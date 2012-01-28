@@ -25,7 +25,7 @@ end
 
 # "Set ~/.ssh permissions."
 task :set_ssh_permissions do
-  run("chown 0755 #{File.join(fetch(:deploy_to), '.ssh')}")
+  run("chmod 0755 #{File.join(fetch(:deploy_to), '.ssh')}")
 end
 
 
