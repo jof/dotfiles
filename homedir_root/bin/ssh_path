@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+
+def usage
+  puts <<-EOF
+# Usage: ssh_path [ roaming | office ]
+#
+# This tool templatizes an ssh configuration in order to redirect connection
+# proxy paths.
+#
+# This looks for configuration in #{SSH_TEMPLATE}, and writes configuration to # #{SSH_CONFIG}
+  EOF
+  exit 1
+end
+
+SSH_CONFIG   = File.expand_path('~/.ssh/config')
+SSH_TEMPLATE = File.expand_path('~/.ssh/config.erb')
+location = ARGV.first.downcase
+
+###
+unless ARGV.length == 1
+  usage
+end
+
+template = ERB.new(open(SSH_TEMPLATE, "r").read)
+result = template.result(binding)
+File.open(SSH_CONFIG, "w") do |file|
+  file.print(result)
+end
