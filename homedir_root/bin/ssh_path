@@ -14,8 +14,11 @@ def usage
   exit 1
 end
 
-SSH_CONFIG   = File.expand_path('~/.ssh/config')
-SSH_TEMPLATE = File.expand_path('~/.ssh/config.erb')
+SSH_DIR           =  File.expand_path('~/.ssh')
+SSH_CONFIG        =  File.join(SSH_DIR, 'config')
+SSH_CONFIG_TOP    =  File.join(SSH_DIR, 'config.top')
+SSH_CONFIG_LOCAL  =  File.join(SSH_DIR, 'config.local')
+SSH_TEMPLATE      =  File.join(SSH_DIR, 'config.erb')
 location = ARGV.first.downcase
 
 ###
@@ -23,8 +26,14 @@ unless ARGV.length == 1
   usage
 end
 
+output = open(SSH_CONFIG, 'w')
+output.write( open(SSH_CONFIG_TOP).read )
+output.write( open(SSH_CONFIG_LOCAL).read ) if File.stat(SSH_CONFIG_LOCAL)
+
 template = ERB.new(open(SSH_TEMPLATE, "r").read)
 result = template.result(binding)
-File.open(SSH_CONFIG, "w") do |file|
-  file.print(result)
-end
+
+output.write(template.result)
+
+output.flush
+output.close
