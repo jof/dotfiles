@@ -25,7 +25,11 @@ end
 
 # "Set ~/.ssh permissions."
 task :set_ssh_permissions do
-  run("chmod 0755 #{File.join(fetch(:deploy_to), '.ssh')}")
+  dot_ssh = File.join(fetch(:deploy_to), '.ssh')
+  run("find \"#{dot_ssh}\" -maxdepth 1 -type f -exec chmod 0600 {} \\;")
+  run("find \"#{dot_ssh}\" -maxdepth 1 -type d -exec chmod 0700 {} \\;")
+  run("chmod 0755 #{dot_ssh}")
+  run("chmod 0644 " + File.join(dot_ssh, "authorized_keys"))
 end
 
 
