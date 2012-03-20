@@ -23,3 +23,7 @@
 
 [branch]
   autosetupmerge = true
+[mergetool "vimdiff3"]
+	cmd = vim -f -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
+[merge]
+	tool = vimdiff3
