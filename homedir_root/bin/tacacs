@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+## TACACS accounting logging helper.
+#
+# Filter a stream of events for a condition.
+#
+
+require 'getoptlong'
+require 'timeout'
+require 'resolv'
+
+TAC_PLUS_ACCOUNTING_LOG_PATTERN = Regexp.new('(\d{1,3}\.){3}\d{1,3}(\t+)\w+(\t+)\w+\d(\t+)(\d{1,3}\.){3}\d{1,3}(\t+)(start|stop)')
+
+def print_event(event)
+  line = ""
+
+  line << "#{event[:date]} "
+  line << "#{event[:username]} on #{event[:remote_host_name] or event[:remote_ip]} (#{event[:manager_host_name] or event[:manager_ip]}) "
+  line << "privilege_level:#{event[:"priv-lvl"]} "
+  line << "command: #{event[:cmd]}"
+
+  puts line
+end
+
+filters = {}
+opts = GetoptLong.new(
+  [ '--username', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--remote_ip', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--remote_host_name', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--command', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--help', GetoptLong::NO_ARGUMENT ]
+)
+opts.each do |opt,arg|
+  if opt == '--help' then
+    puts <<EOF
+    Usage: #{File.basename(__FILE__)} { [ --username | --remote_ip | --remote_host_name | --command ] [ string | /regex/ ] } [ file to read from ]
+     If the file to read from is omitted, stdin is used.
+EOF
+    Kernel.exit(1)
+  end
+
+  filter_name = opt.delete('-') # Trim leading '--'
+  if arg[0] == '/' then
+    filter = Regexp.new(arg)
+  else
+    filter = arg
+  end
+
+  filters[filter_name.to_sym] = filter
+end
+
+if ARGV.length == 0 then
+  INPUT = STDIN
+else
+  INPUT = open(ARGV.shift, 'r')
+end
+raise Exception unless INPUT.is_a?(IO)
+
+while (true) do
+  begin
+    line = INPUT.readline
+  rescue EOFError
+    break if INPUT.is_a?(File) # Break out of the top-most while loop.
+  rescue
+    retry # Wait for things to be appended
+  end
+
+  line = line.strip
+  next unless line.match(TAC_PLUS_ACCOUNTING_LOG_PATTERN)
+
+  parts = line.split("\t")
+  event = {}
+
+  # Pull off the log line elements that are consistent.
+  event[:date], event[:remote_ip], event[:username], event[:tty], event[:manager_ip], event[:start_stop] = parts.slice!(0, 6) 
+
+  # Try and resolve the remote IP, if it appears that tac_plus did not do so itself.
+  if event[:remote_ip].match(/(\d{1,3}\.){3}\d{1,3}/) then
+    begin
+      Timeout.timeout(0.2) do
+        begin
+          rdns_ptr = Resolv.getname(event[:remote_ip])
+          if rdns_ptr.is_a?(String) and rdns_ptr.length > 0 then
+            event[:remote_host_name] = rdns_ptr
+          end
+        rescue Resolv::ResolvError
+        end
+      end
+    rescue Timeout::Error
+    end
+  end
+
+  # Try and resolve the manager IP, if it appears that tac_plus did not do so itself.
+  if event[:manager_ip].match(/(\d{1,3}\.){3}\d{1,3}/) then
+    Timeout.timeout(0.2) do
+      begin
+        rdns_ptr = Resolv.getname(event[:manager_ip])
+        if rdns_ptr.is_a?(String) and rdns_ptr.length > 0 then
+          event[:manager_host_name] = rdns_ptr
+        end
+      rescue Resolv::ResolvError
+      end
+    end
+  end
+
+  # Pull out the rest of the key/value accounting attributes.
+  parts.map! do |key_value|
+    key, value = key_value.split('=', 2)
+    event[key.to_sym] = value
+  end
+
+  # At this point, "event" should hold a hash representing the accounting event.
+
+  if filters.length > 0 then
+    filters.each do |filter_name, filter|
+      if ( event[filter_name] and event[filter_name].match(filter) ) then
+        print_event(event)
+        break
+      end
+    end
+  else
+    print_event(event)
+  end
+
+end
