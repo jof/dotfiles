@@ -14,18 +14,26 @@ xlat = [ 0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41, 0x2c, 0x2e,
          0x63, 0x78, 0x76, 0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b, 0x3b, 0x66,
          0x67, 0x38, 0x37 ];
 
-while line = STDIN.readline.strip do
-  next unless line.length % 2 == 0 # As this is built of hex bytes, we should have an even-length string
+begin
+  while line = STDIN.readline.strip do
+    next unless line.length % 2 == 0 # As this is built of hex bytes, we should have an even-length string
 
-  chars = line.split('').in_groups_of(2)
-  index = chars.shift.join('').to_i(16)
-  next if ( (index < 0) or (index > xlat.length-1) )
+    chars = line.split('').in_groups_of(2)
+    index = chars.shift.join('').to_i
+    next if ( (index < 0) or (index > xlat.length-1) )
 
-  result = ""
-  chars.each do |char|
-    result << (char.join('').to_i(16) ^ xlat[index]).chr
-    index += 1
+    result = ""
+    chars.each do |char|
+      result << (char.join('').to_i(16) ^ xlat[index]).chr
+
+      if index == xlat.length - 1
+        index = 0
+      else
+        index += 1
+      end
+    end
+
+    puts result
   end
-
-  puts result
+rescue EOFError
 end
