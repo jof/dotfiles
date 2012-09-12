@@ -83,8 +83,13 @@ offlineimap() {
 PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}:
 
 autoload -U promptinit
-promptinit
-prompt adam1 black
+type promptinit 2>&1 >/dev/null
+if [ $? -eq 0 ]; then
+  promptinit 2>/dev/null
+  if [ $? -eq 0 ]; then
+    prompt adam1 black
+  fi
+fi
 
 # Initialize GPG agent, if installed.
 which gpg-agent 2>&1 >/dev/null && {
