@@ -11,6 +11,8 @@
   editor = vim
 [color]
   ui = auto
+[rerere]
+  enable = true
 [alias]
   st = status
   ci = commit
