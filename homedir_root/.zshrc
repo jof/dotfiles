@@ -20,7 +20,7 @@ setopt hist_ignore_all_dups
 setopt hist_ignore_space
 
 ## Personal options
-export LANG=en_US.UTF8
+export LANG=en_US.UTF-8
 setopt appendhistory autocd extendedglob
 unsetopt beep nomatch
 export EDITOR=vim
@@ -80,7 +80,7 @@ offlineimap() {
 }
 
 
-PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}:
+PATH=${HOME}/bin:${PATH}:/sbin:/usr/sbin
 
 autoload -U promptinit
 type promptinit 2>&1 >/dev/null
