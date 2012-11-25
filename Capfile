@@ -16,7 +16,7 @@ Dir["#{fetch(:repo_dir)}/config/*.rb"].each { |file| load(file) }
 
 set :application, "jof's dotfiles"
 set :user, ENV['USER']
-set :deploy_to, "/home/#{fetch(:user)}"
+set :deploy_to, '/Users/jof'
 
 desc "Deploy to the local host"
 task :localhost do
@@ -26,10 +26,12 @@ end
 # "Set ~/.ssh permissions."
 task :set_ssh_permissions do
   dot_ssh = File.join(fetch(:deploy_to), '.ssh')
+  run("mkdir -p #{dot_ssh}")
   run("find \"#{dot_ssh}\" -maxdepth 1 -type f -exec chmod 0600 {} \\;")
   run("find \"#{dot_ssh}\" -maxdepth 1 -type d -exec chmod 0700 {} \\;")
   run("chmod 0755 #{dot_ssh}")
-  run("chmod 0644 " + File.join(dot_ssh, "authorized_keys"))
+  authorized_keys = File.join(dot_ssh, "authorized_keys")
+  run("[ -f #{authorized_keys} ] && chmod 0644 #{authorized_keys}")
 end
 
 
