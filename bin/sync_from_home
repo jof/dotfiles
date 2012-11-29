@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+# Sync any changes back from the local homedir back into homedir_root.
+
+# This facilitates local testing and teaking, with a quick way to get those
+# changes back into version control.
+
+require 'find'
+require 'fileutils'
+require 'pathname'
+
+this_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+home_dir = Pathname.new(File.join(this_dir, 'homedir_root'))
+
+Find.find(home_dir) do |path|
+  next if File.directory?(path)
+  relative_path = Pathname.new(path).relative_path_from(home_dir)
+  source_path = File.join(ENV['HOME'], relative_path)
+  if File.exist?(source_path)
+    FileUtils.cp source_path, path
+  end
+end
