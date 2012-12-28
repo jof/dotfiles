@@ -17,6 +17,7 @@ Find.find(home_dir) do |path|
   relative_path = Pathname.new(path).relative_path_from(home_dir)
   source_path = File.join(ENV['HOME'], relative_path)
   if File.exist?(source_path)
+    puts "Copying #{source_path} to #{path}"
     FileUtils.cp source_path, path
   end
 end
