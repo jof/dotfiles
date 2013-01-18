@@ -1,5 +1,8 @@
 which find 2>/dev/null >/dev/null
 if [ "$?" -eq 0 ]; then
-  local _path_spec=$(find "${HOME}/.gem/ruby/"* -maxdepth 1 -iname bin | tr "\n" ":")
-  export PATH="${PATH}:${_path_spec}"
+  local _rubygem_dir="${HOME}/.gem/ruby"
+  if [ -d "$_rubygem_dir" ]; then
+    local _path_spec=$(find ${_rubygem_dir}/* -maxdepth 1 -iname bin | tr "\n" ":")
+    export PATH="${PATH}:${_path_spec}"
+  fi
 fi
