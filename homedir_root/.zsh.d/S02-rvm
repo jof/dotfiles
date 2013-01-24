@@ -1,1 +1,2 @@
 [[ -s "/Users/jof/.rvm/scripts/rvm" ]] && source "/Users/jof/.rvm/scripts/rvm"
+[[ -d "${HOME}/.rvm/bin" ]] && export PATH=$PATH:$HOME/.rvm/bin
