@@ -6,6 +6,8 @@ zstyle :compinstall filename '/home/jof/.zshrc'
 
 autoload -Uz compinit
 compinit
+type compinit 2>&1 >/dev/null
+if [ $? -eq 0 ]; then; compinit; fi
 
 for zshrc_snipplet in ~/.zsh.d/S[0-9][0-9]*[^~]; do
   source $zshrc_snipplet
@@ -42,8 +44,10 @@ alias nc='nc -v -v'
 alias pstree='ps axjf'
 alias psthreads='ps axms'
 alias ll='ls -la'
-alias vi='vim'
 alias grep="grep --color=auto"
+
+# Conditionally alias vi to vim if it's installed.
+which vim 2>&1 >/dev/null; if [ $? -eq 0 ]; then; alias vi='vim'; fi
 
 cd() { builtin cd "$@" && ll -ltrh }
 
@@ -80,7 +84,7 @@ offlineimap() {
 }
 
 
-PATH=${HOME}/bin:${PATH}:/sbin:/usr/sbin
+PATH=${HOME}/bin:/sbin:/usr/sbin:${PATH}
 
 autoload -U promptinit
 type promptinit 2>&1 >/dev/null
