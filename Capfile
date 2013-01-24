@@ -6,6 +6,9 @@ require 'rubygems'
 require 'capistrano'
 require 'find'
 
+# Allocate PTYs on connecting
+default_run_options[:pty] = true
+
 set :repo_dir, File.dirname(__FILE__)
 $: << '.' unless $:.include?('.')
 libdir = File.join(fetch(:repo_dir), 'lib')
