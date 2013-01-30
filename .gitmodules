@@ -13,3 +13,6 @@
 [submodule "homedir_root/.vim/bundle/vim-surround"]
 	path = homedir_root/.vim/bundle/vim-surround
 	url = git://github.com/tpope/vim-surround.git
+[submodule "homedir_root/.vim/bundle/vim-seek"]
+	path = homedir_root/.vim/bundle/vim-seek
+	url = git@github.com:goldfeld/vim-seek.git
