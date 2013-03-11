@@ -22,6 +22,10 @@ set bs=2
 set hidden
 set showmatch
 set foldmethod=syntax
+set nocompatible
+set laststatus=2
+set encoding=utf-8
+set t_Co=256
 
 set ignorecase    " ignore case when searching
 set smartcase     " ignore case if search pattern is all lowercase,
@@ -50,3 +54,8 @@ nnoremap ,F :let word=expand(""):vsp:wincmd w:exec("tag ". word)<CR>
 
 " " use ,gf to go to file in a vertical split
 nnoremap ,gf :vertical botright wincmd f<CR>
+
+let g:Powerline_symbols = "fancy"
+
+nmap <Leader>b :FufBuffer<CR>
+nmap <Leader>t :FufTag<CR>
