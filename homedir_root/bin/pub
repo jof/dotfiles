@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'shellwords'
+require 'yaml'
+
+def die(message)
+  STDERR.puts message
+  exit 1
+end
+
+def hash(file_path)
+  require 'digest'
+  die("No such file #{file_path}") unless File.exist? file_path
+  return Digest::SHA1.hexdigest(File.read(file_path))
+end
+
+def unpathify(path)
+  path.gsub(/\//, '__')
+end
+
+configuration_file = File.join(%w(~ .pub.config))
+die("No configuration file in #{configuration_file}") if not File.exists? configuration_file
+configuration = YAML.load(File.read(configuration_file))
+%w[host url_base dir].each do |option|
+  die("No #{option} set in #{configuration_file}") unless configuration[option]
+end
+
+obsfucate = false
+if ARGV[1] == '--obsfucate' then
+  obsfucate = true
+  ARGV.delete_at(1)
+end
+
+local_files = ARGV
+local_files.map! { |file| Shellwords.escape(file) }
+local_files.map! { |file| file.start_with?('/') ? file : File.join(ENV['PWD'], file) }
+
+scp_commands = []
+local_files.each do |local_path|
+  destination_filename = unpathify(local_path)
+  if obsfucate
+    extension = nil
+    parts = File.basename(local_path).split('.')
+    if parts.length > 1 and (1..5).include?(parts.last.length)
+      extension = parts.last
+    end
+    
+    destination_filename = extension ? hash(local_path)+extension : hash(local_path)
+  end
+  remote_path = File.join(configuration['dir'], destination_filename)
+  scp_commands << "scp #{local_path} #{configuration['host']}:#{remote_path}"
+end
