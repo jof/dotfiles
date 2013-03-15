@@ -8,7 +8,7 @@ def die(message)
   exit 1
 end
 
-def hash(file_path)
+def hash_file(file_path)
   require 'digest'
   die("No such file #{file_path}") unless File.exist? file_path
   return Digest::SHA1.hexdigest(File.read(file_path))
@@ -18,7 +18,7 @@ def unpathify(path)
   path.gsub(/\//, '__')
 end
 
-configuration_file = File.join(%w(~ .pub.config))
+configuration_file = File.expand_path(File.join(%w(~ .pub.config)))
 die("No configuration file in #{configuration_file}") if not File.exists? configuration_file
 configuration = YAML.load(File.read(configuration_file))
 %w[host url_base dir].each do |option|
@@ -26,16 +26,18 @@ configuration = YAML.load(File.read(configuration_file))
 end
 
 obsfucate = false
-if ARGV[1] == '--obsfucate' then
+if ARGV[0] == '--obsfucate' then
   obsfucate = true
-  ARGV.delete_at(1)
+  ARGV.delete_at(0)
 end
 
+die("No files given to publish.") unless ARGV.length >= 1
 local_files = ARGV
 local_files.map! { |file| Shellwords.escape(file) }
 local_files.map! { |file| file.start_with?('/') ? file : File.join(ENV['PWD'], file) }
 
 scp_commands = []
+urls = []
 local_files.each do |local_path|
   destination_filename = unpathify(local_path)
   if obsfucate
@@ -45,8 +47,19 @@ local_files.each do |local_path|
       extension = parts.last
     end
     
-    destination_filename = extension ? hash(local_path)+extension : hash(local_path)
+    destination_filename = extension ? hash_file(local_path)+'.'+extension : hash_file(local_path)
   end
   remote_path = File.join(configuration['dir'], destination_filename)
   scp_commands << "scp #{local_path} #{configuration['host']}:#{remote_path}"
+  urls << configuration['url_base'] + '/' + destination_filename
+end
+
+scp_commands.each do |command|
+  success = system(command)
+  die("Error running: #{command}") unless success
+end
+
+puts "Files posted:"
+urls.each do |url|
+  puts url
 end
