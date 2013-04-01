@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'hotp'
+
+class Array
+  def in_groups_of(n)
+    x = []
+    while self.length > 0 do
+      x << self.shift(n)
+    end
+    x
+  end
+end
+
+print "Key: "
+hex_key = gets.strip
+print "Sequence: "
+seq = gets.strip
+
+binary_key = hex_key.split('').in_groups_of(2).map { |x| x.join.to_i(16).chr }.join
+
+puts HOTP.hotp(binary_key, seq, 6)

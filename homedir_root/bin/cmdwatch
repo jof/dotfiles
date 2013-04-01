@@ -1,0 +1,28 @@
+#!/bin/sh
+# cmdwatch -- monitor program output
+cursor_off='[?25l'
+cursor_on='[?25h'
+
+cursor_home='[H'
+
+trap_handler() {
+	echo $cursor_on
+	clear
+	exit 0
+}
+
+trap trap_handler 2 
+
+if test "$#" -eq 0; then
+	echo 'Usage: cmdwatch COMMAND [args...]'
+	exit 1
+fi
+
+clear
+echo $cursor_off
+while true; do
+	echo $cursor_home
+	date
+	$@
+	sleep 1
+done
