@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-# A de-obsfucator for IOS type "7" passwords.
-
+# A (de)obsfucator for IOS type "7" passwords.
 class Array
   def in_groups_of(n)
     groups = []
@@ -10,43 +9,79 @@ class Array
   end
 end
 
-# This obsfucation works by XORing each byte of the input string against a
-# fixed translation table. After each character, the index is incremented, and
-# will loop around to the beginning when it hits the end.
-#
-# The initial index to the table will be the first two characters of the
-# string, as decimal numbers.
-# Each successive two characters is a hexadecimal byte.
-translation_table = [ 0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41, 0x2c, 0x2e,
-                      0x69, 0x79, 0x65, 0x77, 0x72, 0x6b, 0x6c, 0x64, 0x4a, 0x4b, 0x44, 0x48, 0x53,
-                      0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36, 0x39, 0x38, 0x33, 0x34, 0x6e,
-                      0x63, 0x78, 0x76, 0x39, 0x38, 0x37, 0x33, 0x32, 0x35, 0x34, 0x6b, 0x3b, 0x66,
-                      0x67, 0x38, 0x37 ];
+class CiscoType7
+  # This obsfucation works by XORing each byte of the input string against a
+  # fixed translation table. After each character, the index is incremented, and
+  # will loop around to the beginning when it hits the end.
+  #
+  # The initial index to the table will be the first two characters of the
+  # string, as decimal numbers.
+  # Each successive two characters is a hexadecimal byte.
+  @@translation_table = [ 0x64, 0x73, 0x66, 0x64, 0x3b, 0x6b, 0x66, 0x6f, 0x41,
+    0x2c, 0x2e, 0x69, 0x79, 0x65, 0x77, 0x72, 0x6b, 0x6c, 0x64, 0x4a, 0x4b,
+    0x44, 0x48, 0x53, 0x55, 0x42, 0x73, 0x67, 0x76, 0x63, 0x61, 0x36, 0x39,
+    0x38, 0x33, 0x34, 0x6e, 0x63, 0x78, 0x76, 0x39, 0x38, 0x37, 0x33, 0x32,
+    0x35, 0x34, 0x6b, 0x3b, 0x66, 0x67, 0x38, 0x37 ]
 
-begin
-  while line = STDIN.readline.strip do
-    next unless line.length % 2 == 0 # As this is built of hex bytes, we should have an even-length string
+  def self.next_index(index)
+    # Increment or wrap-around the index pointer.
+    if index == (@@translation_table.length - 1)
+      0
+    else
+      index + 1
+    end
+  end
+
+  def self.deobsfucate(string)
+    # As this is built of hex bytes, we should have an even-length string
+    raise ArgumentError unless string.length % 2 == 0
 
     # Split up our string into two-character groups.
-    chars = line.split('').in_groups_of(2)
+    chars = string.split('').in_groups_of(2)
     # Pull the initial translation table index off of the front.
     index = chars.shift.join('').to_i
     # Ensure that the index is in a sane range.
-    next if ( (index < 0) or (index > translation_table.length-1) )
+    next if ( (index < 0) or (index > @@translation_table.length-1) )
 
     result = ""
     chars.each do |char|
-      result << (char.join('').to_i(16) ^ translation_table[index]).chr
-
-      # Increment or wrap-around the index pointer.
-      if index == translation_table.length - 1
-        index = 0
-      else
-        index += 1
-      end
+      result << (char.join('').to_i(16) ^ @@translation_table[index]).chr
+      index = next_index index
     end
 
-    puts result
+    result
   end
-rescue EOFError
+
+  def self.obsfucate(string)
+    # Pick a translation index.
+    # Hopefully this works in most places. Generally, Cisco IOS seems to pick
+    # very low initial indexes, but it seems that any should be valid.
+    index = rand(@@translation_table.length)
+
+    result = ""
+    # The index is always a two-character decimal.
+    result << format('%02d', index)
+    string.split('').each do |char|
+      # Using both Ruby 1.8 and 1.9 styles for compatibility.
+      byte = char[0].ord
+      result << format('%02X', (byte ^ @@translation_table[index]))
+      index = next_index index
+    end
+
+    result
+  end
+end
+
+def usage
+  STDERR.puts "Usage: #{$0} [ e[ncode] | d[ecode] ]"
+  exit 1
+end
+
+case ARGV.first
+when /^e(ncode)?/
+  puts CiscoType7.obsfucate(STDIN.readline.strip)
+when /^d(ecode)?/, nil
+  puts CiscoType7.deobsfucate(STDIN.readline.strip)
+else
+  usage
 end
