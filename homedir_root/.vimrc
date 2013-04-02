@@ -59,3 +59,8 @@ let g:Powerline_symbols = "fancy"
 
 nmap <Leader>b :FufBuffer<CR>
 nmap <Leader>t :FufTag<CR>
+
+if $VIM_CRONTAB == "true"
+  set nobackup
+  set nowritebackup
+endif
