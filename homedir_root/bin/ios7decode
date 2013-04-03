@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# A (de)obsfucator for IOS type "7" passwords.
+# A (de)obfuscator for IOS type "7" passwords.
 class Array
   def in_groups_of(n)
     groups = []
@@ -10,7 +10,7 @@ class Array
 end
 
 class CiscoType7
-  # This obsfucation works by XORing each byte of the input string against a
+  # This obfuscation works by XORing each byte of the input string against a
   # fixed translation table. After each character, the index is incremented, and
   # will loop around to the beginning when it hits the end.
   #
@@ -32,7 +32,7 @@ class CiscoType7
     end
   end
 
-  def self.deobsfucate(string)
+  def self.deobfuscate(string)
     # As this is built of hex bytes, we should have an even-length string
     raise ArgumentError unless string.length % 2 == 0
 
@@ -41,7 +41,7 @@ class CiscoType7
     # Pull the initial translation table index off of the front.
     index = chars.shift.join('').to_i
     # Ensure that the index is in a sane range.
-    next if ( (index < 0) or (index > @@translation_table.length-1) )
+    raise if ( (index < 0) or (index > @@translation_table.length-1) )
 
     result = ""
     chars.each do |char|
@@ -52,7 +52,7 @@ class CiscoType7
     result
   end
 
-  def self.obsfucate(string)
+  def self.obfuscate(string)
     # Pick a translation index.
     # Hopefully this works in most places. Generally, Cisco IOS seems to pick
     # very low initial indexes, but it seems that any should be valid.
@@ -79,9 +79,9 @@ end
 
 case ARGV.first
 when /^e(ncode)?/
-  puts CiscoType7.obsfucate(STDIN.readline.strip)
+  puts CiscoType7.obfuscate(STDIN.readline.strip)
 when /^d(ecode)?/, nil
-  puts CiscoType7.deobsfucate(STDIN.readline.strip)
+  puts CiscoType7.deobfuscate(STDIN.readline.strip)
 else
   usage
 end
