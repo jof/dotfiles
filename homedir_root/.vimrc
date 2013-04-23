@@ -55,6 +55,8 @@ nnoremap ,F :let word=expand(""):vsp:wincmd w:exec("tag ". word)<CR>
 " " use ,gf to go to file in a vertical split
 nnoremap ,gf :vertical botright wincmd f<CR>
 
+nmap <Leader>s :set spell!<CR>
+
 let g:Powerline_symbols = "fancy"
 
 nmap <Leader>b :FufBuffer<CR>
