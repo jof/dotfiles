@@ -47,7 +47,7 @@ colorscheme desert
 
 " vim-pathogen: load everything under ~/.vim/bundle
 call pathogen#helptags()
-call pathogen#runtime_append_all_bundles()
+call pathogen#incubate()
 
 " use ,F to jump to tag in a vertical split
 nnoremap ,F :let word=expand(""):vsp:wincmd w:exec("tag ". word)<CR>
