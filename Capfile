@@ -19,15 +19,19 @@ Dir["#{fetch(:repo_dir)}/config/*.rb"].each { |file| load(file) }
 
 set :application, "jof's dotfiles"
 set :user, ENV['USER']
-set :deploy_to, '/Users/jof'
+set :deploy_to, '/home/jof'
 
 desc "Deploy to the local host"
 task :localhost do
   role :server, "localhost"
 end
 
+task :find_deploy_to do
+  set :deploy_to, capture('echo ~jof')
+end
+
 # "Set ~/.ssh permissions."
-task :set_ssh_permissions do
+task :set_ssh_permissions, :depends => :find_deploy_to do
   dot_ssh = File.join(fetch(:deploy_to), '.ssh')
   run("mkdir -p #{dot_ssh}")
   run("find \"#{dot_ssh}\" -maxdepth 1 -type f -exec chmod 0600 {} \\;")
@@ -39,7 +43,7 @@ end
 
 
 desc "Load up a home directory with personal options and tools."
-task :deploy do |config|
+task :deploy, :depends => :find_deploy_to do |config|
   role(:server, hostname) if config[:hostname] 
 
   # Enumerate local files to place
