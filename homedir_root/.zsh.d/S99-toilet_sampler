@@ -1,0 +1,8 @@
+toilet_sampler() {
+  _latest_figlet=`find /usr/local/Cellar/figlet -type d -maxdepth 1 -mindepth 1 | sort -n | tail -1`
+  _font_dir="$_latest_figlet/share/figlet/fonts"
+  for fontfile in `ls -1 "$_font_dir"`; do
+    echo "$fontfile"
+    toilet --directory "$_font_dir" --font "$fontfile" $*
+  done 2>/dev/null | less -r
+}
