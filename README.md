@@ -25,7 +25,11 @@ Deployment of files to a newly-setup host is done utilizing the Capistrano utili
 
 First, install Capistrano if it is not present already:
 
+    # For any generic Ruby environment.
     gem install capistrano
+    
+    # For Debian
+    apt-get install capistrano
 
 Then, to deploy to a specific host, call the "deploy" task, while passing in the "hostname" option.
 
