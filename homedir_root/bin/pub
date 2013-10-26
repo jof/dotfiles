@@ -25,9 +25,9 @@ configuration = YAML.load(File.read(configuration_file))
   die("No #{option} set in #{configuration_file}") unless configuration[option]
 end
 
-obsfucate = false
-if ARGV[0] == '--obsfucate' then
-  obsfucate = true
+obfuscate = false
+if ARGV[0] == '--obfuscate' then
+  obfuscate = true
   ARGV.delete_at(0)
 end
 
@@ -40,7 +40,7 @@ scp_commands = []
 urls = []
 local_files.each do |local_path|
   destination_filename = unpathify(local_path)
-  if obsfucate
+  if obfuscate
     extension = nil
     parts = File.basename(local_path).split('.')
     if parts.length > 1 and (1..5).include?(parts.last.length)
