@@ -16,3 +16,6 @@
 [submodule "homedir_root/.vim/bundle/vim-seek"]
 	path = homedir_root/.vim/bundle/vim-seek
 	url = git@github.com:goldfeld/vim-seek.git
+[submodule "homedir_root/.vim/bundle/vim-align"]
+	path = homedir_root/.vim/bundle/vim-align
+	url = git://github.com/vim-scripts/Align.git
