@@ -1,0 +1,3 @@
+what_the_cert() {
+  openssl s_client -connect ${1}:https -showcerts | openssl x509 -text | less
+}
